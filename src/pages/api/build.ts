@@ -30,7 +30,7 @@ export const post: APIRoute = async ({ request }) => {
 	const fontFiles: any[] = [];
 
 	// Find all @font-face
-	await root.walkAtRules( 'font-face', atRule => {
+	root.walkAtRules( 'font-face', atRule => {
 		// Get font
 		const annotation = atRule.prev()
 		let charset = 'latin';
