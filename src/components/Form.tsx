@@ -103,7 +103,7 @@ const createFontsCss = ( fonts: Map<string, any> ): string => {
 }
 
 export default function Form() {
-	const [url, setUrl] = useState('https://fonts.googleapis.com/css2?family=Figtree:wght@300;400&display=swap');
+	const [url, setUrl] = useState('');
 	const [isLoading, setIsLoading ] = useState( false );
 	const [zip, setZip ] = useState( '' );
 	const [fontsCss, setFontsCss ] = useState( '' );
@@ -194,7 +194,7 @@ export default function Form() {
 							<span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
 								URL
 							</span>
-							<input type="url" class="mt-1 px-3 py-2 bg-sky-50 border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1" placeholder="https://fonts.googleapis.com/css2?family=…" value={ url } onInput={ onUrlChange } />
+							<input type="url" class="mt-1 px-3 py-2 bg-sky-50 border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1 drop-shadow-sm" placeholder="https://fonts.googleapis.com/css2?family=…" value={ url } onInput={ onUrlChange } />
 						</label>
 					</div>
 					<div>
@@ -233,11 +233,11 @@ export default function Form() {
 				<div class="space-y-6">
 					<p>Copy the CSS and download the ZIP file with the font files.</p>
 					<div>
-						<textarea ref={ cssTextareaRef } class="px-3 py-2 bg-sky-50 border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs" readonly rows={ fontsCss.split('\n').length + 2 }>{ fontsCss }</textarea>
+						<textarea ref={ cssTextareaRef } class="px-3 py-2 bg-sky-50 border border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs drop-shadow-md resize-none" readonly rows={ fontsCss.split('\n').length + 2 }>{ fontsCss }</textarea>
 					</div>
 					<div class="flex align-center">
 						<div>
-							<a class="rounded-md border border-transparent bg-sky-700 py-4 px-6 text-m font-medium text-white hover:bg-sky-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2" href={ `data:application/zip;base64,${zip}` } download="fonts.zip">Download fonts.zip</a>
+							<a class="block rounded-md border border-transparent bg-sky-700 py-4 px-6 text-m font-medium text-white hover:bg-sky-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2" href={ `data:application/zip;base64,${zip}` } download="fonts.zip">Download fonts.zip</a>
 						</div>
 						<button class="ml-10 font-medium text-red-500" type="button" onClick={ reset }>Reset</button>
 					</div>
