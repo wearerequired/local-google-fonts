@@ -49,7 +49,7 @@ const parseFontFacesFromCss = (css: string): Map<string, any> => {
 		});
 
 		let key = `${fontData['font-family']}-${fontData.charset}-${fontData['font-style']}-${fontData['font-weight']}`;
-		key = key.replace(/'/g, '');
+		key = key.replace(/['\[\]]/g, '');
 		key = key.replace(/ /g, '-');
 		key = key.toLocaleLowerCase();
 
@@ -88,7 +88,7 @@ const createFontsCss = ( fonts: Map<string, any> ): string => {
 		rule.append( new Declaration({ prop: 'font-family', value: font['font-family'] } ) );
 		rule.append( new Declaration({ prop: 'font-style', value: font['font-style'] } ) );
 		rule.append( new Declaration({ prop: 'font-weight', value: font['font-weight'] } ) );
-		rule.append( new Declaration({ prop: 'font-display', value: font['swap'] } ) );
+		rule.append( new Declaration({ prop: 'font-display', value: 'swap' } ) );
 		rule.append( new Declaration({ prop: 'src', value: `url(../fonts/${key}.woff2) format('woff2')` } ) );
 		rule.append( new Declaration({ prop: 'unicode-range', value: font['unicode-range']} ) );
 
