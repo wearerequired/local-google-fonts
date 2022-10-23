@@ -127,6 +127,7 @@ export default function Form() {
 				'Accept': 'text/css',
 				'User-Agent': USER_AGENT,
 			},
+			mode: 'cors',
 		});
 
 		if ( response.status !== 200 ) {
@@ -151,14 +152,14 @@ export default function Form() {
 		if (event.target instanceof HTMLInputElement) {
 			const { value, checked } = event.target;
 
-			const newSelectedFont =  new Map( [ ...selectedFonts ] );
+			const newSelectedFonts =  new Map( [ ...selectedFonts ] );
 			if ( checked ) {
-				newSelectedFont.set( value, availableFonts.get( value ) );
+				newSelectedFonts.set( value, availableFonts.get( value ) );
 			} else {
-				newSelectedFont.delete( value );
+				newSelectedFonts.delete( value );
 			}
 
-			setSelectedFonts( newSelectedFont );
+			setSelectedFonts( newSelectedFonts );
 		}
 	}
 
@@ -184,6 +185,37 @@ export default function Form() {
 		setFontsCss( '' );
 	}
 
+	const selectAllFonts = () => {
+		if ( selectedFonts.size > 0 ) {
+			setSelectedFonts( new Map() );
+		} else {
+			setSelectedFonts( new Map( [ ...availableFonts ] ) );
+		}
+	}
+
+	const selectAllLatinFonts = () => {
+		const newSelectedFonts =  new Map( [ ...selectedFonts ] );
+
+		availableFonts.forEach( ( font, key ) => {
+			if ( font.charset === 'latin' ) {
+				newSelectedFonts.set( key, font );
+			}
+		} );
+
+		setSelectedFonts( newSelectedFonts );
+	}
+	const selectAllLatinExtFonts = () => {
+		const newSelectedFonts =  new Map( [ ...selectedFonts ] );
+
+		availableFonts.forEach( ( font, key ) => {
+			if ( font.charset === 'latin-ext' ) {
+				newSelectedFonts.set( key, font );
+			}
+		} );
+
+		setSelectedFonts( newSelectedFonts );
+	}
+
 	return (
 		<>
 			{ ! isLoading && ! availableFonts.size && (
@@ -207,8 +239,8 @@ export default function Form() {
 			) }
 			{ ! isLoading && !! availableFonts.size && ! zip && (
 				<form class="space-y-6" onSubmit={ createZip }>
-					<p>Select the fonts and charsets you want to download.</p>
-					<fieldset class="space-y-2">
+					<p>Select the fonts and subsets you want to download.</p>
+					<fieldset class="space-y-2 max-h-96 overflow-y-auto">
 						{
 							Array.from( availableFonts ).map( ( [key, font] ) => {
 								return (
@@ -224,6 +256,11 @@ export default function Form() {
 							})
 						}
 					</fieldset>
+					<div class="flex flex-row gap-4">
+						<button type="button" onClick={ selectAllFonts }>(De)select all</button>
+						<button type="button" onClick={ selectAllLatinFonts }>Select latin</button>
+						<button type="button" onClick={ selectAllLatinExtFonts }>Select latin-ext</button>
+					</div>
 					<div>
 						<Button type="submit" disabled={ selectedFonts.size === 0 }>Create ZIP and CSS</Button>
 					</div>
