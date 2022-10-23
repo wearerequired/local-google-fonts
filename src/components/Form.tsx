@@ -5,8 +5,6 @@ import JSZip from 'jszip'
 
 import Button from './Button';
 
-const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36';
-
 const parseFontFacesFromCss = (css: string): Map<string, any> => {
 	const root = parse( css );
 
@@ -63,11 +61,7 @@ const loadAndCreateFontsZip = async ( fonts: Map<string, any> ) => {
 	const zip = new JSZip();
 
 	const remoteFiles = Array.from( fonts ).map( async ( [filename, { src }] ) => {
-		const response = await fetch( src.url, {
-			headers: {
-				'User-Agent': USER_AGENT,
-			},
-		});
+		const response = await fetch( src.url);
 		const data = await response.arrayBuffer();
 
 		zip.file(`${filename}.${src.format}`, data);
@@ -89,7 +83,7 @@ const createFontsCss = ( fonts: Map<string, any> ): string => {
 		rule.append( new Declaration({ prop: 'font-style', value: font['font-style'] } ) );
 		rule.append( new Declaration({ prop: 'font-weight', value: font['font-weight'] } ) );
 		rule.append( new Declaration({ prop: 'font-display', value: 'swap' } ) );
-		rule.append( new Declaration({ prop: 'src', value: `url(../fonts/${key}.woff2) format('woff2')` } ) );
+		rule.append( new Declaration({ prop: 'src', value: `url(../fonts/${key}.${font.src.format}) format('${font.src.format}')` } ) );
 		rule.append( new Declaration({ prop: 'unicode-range', value: font['unicode-range']} ) );
 
 		root.append( rule );
@@ -104,6 +98,7 @@ const createFontsCss = ( fonts: Map<string, any> ): string => {
 
 export default function Form() {
 	const [url, setUrl] = useState('');
+	const [error, setError] = useState('');
 	const [isLoading, setIsLoading ] = useState( false );
 	const [zip, setZip ] = useState( '' );
 	const [fontsCss, setFontsCss ] = useState( '' );
@@ -122,21 +117,44 @@ export default function Form() {
 
 		setIsLoading( true );
 
-		const response = await fetch(url, {
-			headers: {
-				'Accept': 'text/css',
-				'User-Agent': USER_AGENT,
-			},
-			mode: 'cors',
-		});
+		let response;
+		try {
+			response = await fetch(url, {
+				headers: {
+					'Accept': 'text/css',
+				},
+			});
+		} catch ( e ) {
+			console.error( e );
+		}
+
+		if ( ! response ) {
+			setError( 'Error loading CSS' );
+			setIsLoading( false );
+			return;
+		}
 
 		if ( response.status !== 200 ) {
-			console.error( response.statusText );
+			console.error( response );
+			setError( 'Error loading CSS' );
+			setIsLoading( false );
 			return;
 		}
 
 		const css = await response.text();
-		const fontFaces = parseFontFacesFromCss( css );
+
+		let fontFaces;
+		try {
+			fontFaces = parseFontFacesFromCss( css );
+		} catch ( e ) {
+			console.error( e );
+		}
+
+		if ( ! fontFaces ) {
+			setError( 'Error parsing CSS' );
+			setIsLoading( false );
+			return;
+		}
 
 		setAvailableFonts( fontFaces );
 		setIsLoading( false );
@@ -178,6 +196,7 @@ export default function Form() {
 	}
 
 	const reset = () => {
+		setError( '' );
 		setUrl( '' );
 		setAvailableFonts( new Map() );
 		setSelectedFonts( new Map() );
@@ -218,7 +237,8 @@ export default function Form() {
 
 	return (
 		<>
-			{ ! isLoading && ! availableFonts.size && (
+			{ !! error && <div class="text-red-500">💥 { error } <button class="ml-1 text-black font-medium" type="button" onClick={ reset }>Try again</button></div> }
+			{ ! error && ! isLoading && ! availableFonts.size && (
 				<form class="space-y-6" onSubmit={ loadCSS }>
 					<p>Go to <a class="text-sky-600 hover:text-sky-800 underline" href="https://fonts.google.com/">Google Fonts</a> and select your font families. Copy the CSS URL and paste it into the URL field below.</p>
 					<div>
@@ -257,9 +277,9 @@ export default function Form() {
 						}
 					</fieldset>
 					<div class="flex flex-row gap-4">
-						<button type="button" onClick={ selectAllFonts }>(De)select all</button>
-						<button type="button" onClick={ selectAllLatinFonts }>Select latin</button>
-						<button type="button" onClick={ selectAllLatinExtFonts }>Select latin-ext</button>
+						<button type="button" onClick={ selectAllFonts } class="text-sky-600 hover:text-sky-800">(De)select all</button>
+						<button type="button" onClick={ selectAllLatinFonts } class="text-sky-600 hover:text-sky-800">Select latin</button>
+						<button type="button" onClick={ selectAllLatinExtFonts } class="text-sky-600 hover:text-sky-800">Select latin-ext</button>
 					</div>
 					<div>
 						<Button type="submit" disabled={ selectedFonts.size === 0 }>Create ZIP and CSS</Button>
@@ -270,7 +290,7 @@ export default function Form() {
 				<div class="space-y-6">
 					<p>Copy the CSS and download the ZIP file with the font files.</p>
 					<div>
-						<textarea ref={ cssTextareaRef } class="px-3 py-2 bg-sky-50 border border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs drop-shadow-md resize-none" readonly rows={ fontsCss.split('\n').length + 2 }>{ fontsCss }</textarea>
+						<textarea ref={ cssTextareaRef } class="px-3 py-2 bg-sky-50 border border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs drop-shadow-md resize-none max-h-96" readonly rows={ fontsCss.split('\n').length + 2 }>{ fontsCss }</textarea>
 					</div>
 					<div class="flex align-center">
 						<div>
