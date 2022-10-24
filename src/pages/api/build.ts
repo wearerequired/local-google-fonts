@@ -1,3 +1,4 @@
+/* Note: This is unused as everything here also works in the browser. */
 import { parse } from 'postcss';
 import valueParser from 'postcss-value-parser'
 import JSZip from 'jszip'
