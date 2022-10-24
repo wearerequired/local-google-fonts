@@ -2,6 +2,8 @@
 
 A small helper to download modern Google Fonts files for local hosting. Visit [local-google-fonts.vercel.app](https://local-google-fonts.vercel.app/) for more.
 
+For a demo see the [Sharing is Caring page in Notion](https://www.notion.so/required/POC-Local-Google-Fonts-059375d73bdc4b49ab1ad3da621637a8).
+
 ## 🚀 Project Structure
 
 Inside of your [Astro](https://astro.build/) project, you'll see the following folders and files:
