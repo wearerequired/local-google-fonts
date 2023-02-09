@@ -241,7 +241,7 @@ export default function Form() {
 			{ !! error && <div class="text-red-500">💥 { error } <button class="ml-1 text-black font-medium" type="button" onClick={ reset }>Try again</button></div> }
 			{ ! error && ! isLoading && ! availableFonts.size && (
 				<form class="space-y-6" onSubmit={ loadCSS }>
-					<p>Go to <Link href="https://fonts.google.com/">Google Fonts</Link> and select your font families. Copy the CSS URL and paste it into the URL field below.</p>
+					<p class="max-w-2xl">Go to <Link href="https://fonts.google.com/" target="_blank">Google Fonts</Link> and select your font families. Copy the CSS URL from the "Use on the web" section and paste it into the URL field below.</p>
 					<div>
 						<label class="block">
 							<span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
