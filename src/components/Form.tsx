@@ -6,6 +6,8 @@ import classnames from 'classnames';
 
 import Button from './Button';
 import Link from './Link';
+import CopyButton from './CopyButton';
+import CodeTextarea from './CodeTextarea';
 
 const parseFontFacesFromCss = (css: string): Map<string, any> => {
 	const root = parse( css );
@@ -156,7 +158,7 @@ const createThemeJson = ( fonts: Map<string, any> ): string => {
 }
 
 export default function Form() {
-	const [url, setUrl] = useState('');
+	const [url, setUrl] = useState('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
 	const [error, setError] = useState('');
 	const [isLoading, setIsLoading ] = useState( false );
 	const [zip, setZip ] = useState( '' );
@@ -165,14 +167,6 @@ export default function Form() {
 	const [availableFonts, setAvailableFonts ] = useState( new Map<string, any>() );
 	const [selectedFonts, setSelectedFonts ] = useState( new Map<string, any>() );
 	const [activeTab, setActiveTab] = useState( 'css' );
-	const cssTextareaRef = useRef( null );
-	const themeJsonTextareaRef = useRef( null );
-
-	useEffect( () => {
-		if ( fontsCss && cssTextareaRef.current ) {
-			(cssTextareaRef.current as HTMLTextAreaElement).select();
-		}
-	}, [fontsCss] );
 
 	const loadCSS = async ( event: Event ) => {
 		event.preventDefault();
@@ -365,11 +359,13 @@ export default function Form() {
 								<span class={ classnames( { 'text-slate-900': 'theme-json' === activeTab, 'text-slate-600': 'theme-json' !== activeTab } ) }>theme.json</span>
 							</button>
 						</div>
-						<div id="zip-tab-panel-css" hidden={ 'css' === activeTab ? undefined : true }>
-							<textarea ref={ cssTextareaRef } class="px-3 py-2 bg-sky-50 border border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs drop-shadow-md resize-none max-h-96" readonly rows={ fontsCss.split('\n').length + 2 }>{ fontsCss }</textarea>
+						<div id="zip-tab-panel-css" hidden={ 'css' === activeTab ? undefined : true } class="relative">
+							<CodeTextarea>{ fontsCss }</CodeTextarea>
+							<CopyButton class="absolute bottom-1 right-1 py-1 px-2 text-sm uppercase" text={ fontsCss } />
 						</div>
-						<div id="zip-tab-panel-theme-json" hidden={ 'theme-json' === activeTab ? undefined : true }>
-							<textarea ref={ themeJsonTextareaRef } class="px-3 py-2 bg-sky-50 border border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs drop-shadow-md resize-none max-h-96" readonly rows={ themeJson.split('\n').length + 2 }>{ themeJson }</textarea>
+						<div id="zip-tab-panel-theme-json" hidden={ 'theme-json' === activeTab ? undefined : true } class="relative">
+							<CodeTextarea>{ themeJson }</CodeTextarea>
+							<CopyButton class="absolute bottom-1 right-1 py-1 px-2 text-sm uppercase" text={ themeJson }/>
 						</div>
 					</div>
 					<div class="flex align-center">
