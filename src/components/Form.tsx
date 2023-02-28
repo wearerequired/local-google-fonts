@@ -301,7 +301,8 @@ export default function Form() {
 			{ !! error && <div class="text-red-500">💥 { error } <button class="ml-1 text-black font-medium" type="button" onClick={ reset }>Try again</button></div> }
 			{ ! error && ! isLoading && ! availableFonts.size && (
 				<form class="space-y-6" onSubmit={ loadCSS }>
-					<p class="max-w-2xl">Go to <Link href="https://fonts.google.com/" target="_blank">Google Fonts</Link> and select your font families. Copy the CSS URL from the "Use on the web" section and paste it into the URL field below.</p>
+					<p class="max-w-prose">Here you can download the web fonts and create the necessary CSS or WordPress' theme.json for hosting Google Fonts locally.</p>
+					<p class="max-w-prose">How? Go to <Link href="https://fonts.google.com/" target="_blank">Google Fonts</Link> and select your font families. Copy the CSS URL from the "Use&nbsp;on&nbsp;the&nbsp;web" section and paste it into the URL field below.</p>
 					<div>
 						<label class="block">
 							<span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
@@ -349,7 +350,7 @@ export default function Form() {
 			) }
 			{ ! isLoading && zip && (
 				<div class="space-y-6">
-					<p>Copy the CSS or theme JSON and download the ZIP file with the font files.</p>
+					<p>Copy the CSS or theme.json and download the ZIP file with the font files.</p>
 					<div>
 						<div class="flex rounded-md bg-slate-100 p-0.5 w-fit mb-2" role="tablist" aria-orientation="horizontal">
 							<button class={ classnames( 'rounded-md py-2 px-4 text-sm font-medium', { 'bg-white': 'css' === activeTab } ) } id="zip-tab-css" role="tab" type="button" aria-selected={ 'css' === activeTab ? 'true' : 'false' } aria-controls="zip-tab-panel-css" onClick={ () => setActiveTab('css') }>
