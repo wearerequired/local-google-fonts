@@ -2,6 +2,12 @@
 
 A small helper to download modern Google Fonts files for local hosting. Supports subsets for use with unicode-range. Visit [local-google-fonts.vercel.app](https://local-google-fonts.vercel.app/) for more.
 
+
+
+https://user-images.githubusercontent.com/617637/221876103-4130e782-4ca0-4eb2-a54c-849a31c65d71.mp4
+
+
+
 ## Contributing
 
 All commands are run from the root of the project, from a terminal:
