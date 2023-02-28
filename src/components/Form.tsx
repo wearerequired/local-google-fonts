@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'preact/hooks';
 import { parse, Root, AtRule, Comment, Declaration } from 'postcss';
 import valueParser from 'postcss-value-parser'
 import JSZip from 'jszip'
+import classnames from 'classnames';
 
 import Button from './Button';
 import Link from './Link';
@@ -91,10 +92,67 @@ const createFontsCss = ( fonts: Map<string, any> ): string => {
 
 		const comment = new Comment({ text: font.charset });
 		rule.before( comment );
-
 	} );
 
 	return root.toString();
+}
+
+interface WpThemeJsonSettingsTypographyFontFamily {
+	name: string;
+	slug: string;
+	fontFamily: string;
+	fontFace: any[];
+}
+
+interface WpThemeJsonSettingsTypography {
+	fontFamilies: WpThemeJsonSettingsTypographyFontFamily[];
+}
+
+interface WpThemeJsonSettings {
+	typography: WpThemeJsonSettingsTypography;
+}
+
+interface WpThemeJson {
+	version: number;
+	settings: WpThemeJsonSettings;
+}
+
+const createThemeJson = ( fonts: Map<string, any> ): string => {
+	const themeJson : WpThemeJson = {
+		version: 2,
+		settings: {
+			typography: {
+				fontFamilies: [],
+			}
+		}
+	};
+
+	fonts.forEach( ( font, key ) => {
+		let entry = themeJson.settings.typography.fontFamilies.find( ( fontFamily ) => fontFamily.fontFamily === font['font-family'] );
+		if ( ! entry ) {
+			entry = {
+				name: font['font-family'].replace( /'/g, '' ),
+				slug: font['font-family'].toLocaleLowerCase().replace( / /g, '-' ),
+				fontFamily: font['font-family'],
+				fontFace: [],
+			};
+
+			themeJson.settings.typography.fontFamilies.push( entry );
+		}
+
+		entry.fontFace.push( {
+			fontFamily: font['font-family'],
+			fontWeight: font['font-weight'],
+			fontStyle: font['font-style'],
+			fontDisplay: 'swap',
+			src: [
+				`file:./assets/fonts/${key}.${font.src.format}`,
+			],
+			unicodeRange: font['unicode-range'],
+		} );
+	} );
+
+	return JSON.stringify( themeJson, null, 2 );
 }
 
 export default function Form() {
@@ -103,9 +161,12 @@ export default function Form() {
 	const [isLoading, setIsLoading ] = useState( false );
 	const [zip, setZip ] = useState( '' );
 	const [fontsCss, setFontsCss ] = useState( '' );
+	const [themeJson, setThemeJson ] = useState( '' );
 	const [availableFonts, setAvailableFonts ] = useState( new Map<string, any>() );
 	const [selectedFonts, setSelectedFonts ] = useState( new Map<string, any>() );
+	const [activeTab, setActiveTab] = useState( 'css' );
 	const cssTextareaRef = useRef( null );
+	const themeJsonTextareaRef = useRef( null );
 
 	useEffect( () => {
 		if ( fontsCss && cssTextareaRef.current ) {
@@ -193,6 +254,9 @@ export default function Form() {
 		const css = createFontsCss( selectedFonts );
 		setFontsCss( css );
 
+		const themeJson = createThemeJson( selectedFonts );
+		setThemeJson( themeJson );
+
 		setIsLoading( false );
 	}
 
@@ -203,6 +267,8 @@ export default function Form() {
 		setSelectedFonts( new Map() );
 		setZip( '' );
 		setFontsCss( '' );
+		setThemeJson( '' );
+		setActiveTab( 'css' );
 	}
 
 	const selectAllFonts = () => {
@@ -289,9 +355,22 @@ export default function Form() {
 			) }
 			{ ! isLoading && zip && (
 				<div class="space-y-6">
-					<p>Copy the CSS and download the ZIP file with the font files.</p>
+					<p>Copy the CSS or theme JSON and download the ZIP file with the font files.</p>
 					<div>
-						<textarea ref={ cssTextareaRef } class="px-3 py-2 bg-sky-50 border border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs drop-shadow-md resize-none max-h-96" readonly rows={ fontsCss.split('\n').length + 2 }>{ fontsCss }</textarea>
+						<div class="flex rounded-md bg-slate-100 p-0.5 w-fit mb-2" role="tablist" aria-orientation="horizontal">
+							<button class={ classnames( 'rounded-md py-2 px-4 text-sm font-medium', { 'bg-white': 'css' === activeTab } ) } id="zip-tab-css" role="tab" type="button" aria-selected={ 'css' === activeTab ? 'true' : 'false' } aria-controls="zip-tab-panel-css" onClick={ () => setActiveTab('css') }>
+								<span class={ classnames( { 'text-slate-900': 'css' === activeTab, 'text-slate-600': 'css' !== activeTab } ) }>CSS</span>
+							</button>
+							<button class={ classnames( 'rounded-md py-2 px-4 text-sm font-medium', { 'bg-white': 'theme-json' === activeTab } ) } id="zip-tab-theme-json" role="tab" type="button" aria-selected={ 'theme-json' === activeTab ? 'true' : 'false' } aria-controls="zip-tab-panel-theme-json" onClick={ () => setActiveTab('theme-json') }>
+								<span class={ classnames( { 'text-slate-900': 'theme-json' === activeTab, 'text-slate-600': 'theme-json' !== activeTab } ) }>theme.json</span>
+							</button>
+						</div>
+						<div id="zip-tab-panel-css" hidden={ 'css' === activeTab ? undefined : true }>
+							<textarea ref={ cssTextareaRef } class="px-3 py-2 bg-sky-50 border border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs drop-shadow-md resize-none max-h-96" readonly rows={ fontsCss.split('\n').length + 2 }>{ fontsCss }</textarea>
+						</div>
+						<div id="zip-tab-panel-theme-json" hidden={ 'theme-json' === activeTab ? undefined : true }>
+							<textarea ref={ themeJsonTextareaRef } class="px-3 py-2 bg-sky-50 border border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md focus:ring-1 font-mono text-xs drop-shadow-md resize-none max-h-96" readonly rows={ themeJson.split('\n').length + 2 }>{ themeJson }</textarea>
+						</div>
 					</div>
 					<div class="flex align-center">
 						<div>
