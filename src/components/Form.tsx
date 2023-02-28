@@ -158,8 +158,8 @@ const createThemeJson = ( fonts: Map<string, any> ): string => {
 }
 
 export default function Form() {
-	const [url, setUrl] = useState('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
-	const [error, setError] = useState('');
+	const [url, setUrl] = useState( '' );
+	const [error, setError] = useState( '' );
 	const [isLoading, setIsLoading ] = useState( false );
 	const [zip, setZip ] = useState( '' );
 	const [fontsCss, setFontsCss ] = useState( '' );
@@ -218,7 +218,16 @@ export default function Form() {
 
 	const onUrlChange = ( event: Event ) => {
 		if (event.target instanceof HTMLInputElement) {
-			setUrl( event.target.value )
+			let value = event.target.value;
+
+			if ( value.startsWith( '<link' ) ) {
+				const matches = value.match( /href="([^"]+)"\s+rel="stylesheet"/ );
+				if ( matches ) {
+					value = matches[1];
+				}
+			}
+
+			setUrl(value )
 		}
 	}
 
@@ -302,7 +311,7 @@ export default function Form() {
 			{ ! error && ! isLoading && ! availableFonts.size && (
 				<form class="space-y-6" onSubmit={ loadCSS }>
 					<p class="max-w-prose">Here you can download the web fonts and create the necessary CSS or WordPress' theme.json for hosting Google Fonts locally.</p>
-					<p class="max-w-prose">How? Go to <Link href="https://fonts.google.com/" target="_blank">Google Fonts</Link> and select your font families. Copy the CSS URL from the "Use&nbsp;on&nbsp;the&nbsp;web" section and paste it into the URL field below.</p>
+					<p class="max-w-prose">How? Go to <Link href="https://fonts.google.com/" target="_blank">Google Fonts</Link> and select your font families. Copy the code with the &lt;link&gt; tags from the "Use&nbsp;on&nbsp;the&nbsp;web" section and paste it into the URL field below.</p>
 					<div>
 						<label class="block">
 							<span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
