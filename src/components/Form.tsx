@@ -132,9 +132,10 @@ const createThemeJson = ( fonts: Map<string, any> ): string => {
 	fonts.forEach( ( font, key ) => {
 		let entry = themeJson.settings.typography.fontFamilies.find( ( fontFamily ) => fontFamily.fontFamily === font['font-family'] );
 		if ( ! entry ) {
+			const name = font['font-family'].replace( /'/g, '' );
 			entry = {
-				name: font['font-family'].replace( /'/g, '' ),
-				slug: font['font-family'].toLocaleLowerCase().replace( / /g, '-' ),
+				name,
+				slug: name.toLocaleLowerCase().replace( / /g, '-' ),
 				fontFamily: font['font-family'],
 				fontFace: [],
 			};
