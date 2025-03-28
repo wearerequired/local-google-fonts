@@ -1,17 +1,22 @@
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 import preact from "@astrojs/preact";
 
+import tailwindcss from "@tailwindcss/vite";
+
 // https://astro.build/config
-import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
   adapter: vercel(),
-  integrations: [preact(), tailwind()]
+  integrations: [preact()],
+
+  vite: {
+    plugins: [tailwindcss()]
+  }
 });
