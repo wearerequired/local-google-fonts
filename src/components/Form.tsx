@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect } from 'preact/hooks';
-import { parse, Root, AtRule, Comment, Declaration } from 'postcss';
-import valueParser from 'postcss-value-parser'
-import JSZip from 'jszip'
 import classnames from 'classnames';
+import JSZip from 'jszip';
+import { AtRule, Comment, Declaration, parse, Root } from 'postcss';
+import valueParser from 'postcss-value-parser';
+import { useState } from 'preact/hooks';
 
 import Button from './Button';
-import Link from './Link';
-import CopyButton from './CopyButton';
 import CodeTextarea from './CodeTextarea';
+import CopyButton from './CopyButton';
+import Link from './Link';
 
 const parseFontFacesFromCss = (css: string): Map<string, any> => {
 	const root = parse( css );
@@ -312,7 +312,7 @@ export default function Form() {
 			{ ! error && ! isLoading && ! availableFonts.size && (
 				<form class="space-y-6" onSubmit={ loadCSS }>
 					<p class="max-w-prose">Here you can download the web fonts and create the necessary CSS or WordPress' theme.json for hosting Google Fonts locally.</p>
-					<p class="max-w-prose">How? Go to <Link href="https://fonts.google.com/" target="_blank">Google Fonts</Link> and select your font families. Copy the code with the &lt;link&gt; tags from the "Use&nbsp;on&nbsp;the&nbsp;web" section and paste it into the URL field below.</p>
+					<p class="max-w-prose">How? Go to <Link href="https://fonts.google.com/" target="_blank">Google Fonts</Link> and select your font families. Copy the code with the &lt;link&gt; tags from the "Embed code in the &lt;head&gt; of your html" field in the Embed code section and paste it into the URL field below.</p>
 					<div>
 						<label class="block">
 							<span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">

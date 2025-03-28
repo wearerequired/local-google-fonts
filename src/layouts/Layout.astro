@@ -6,7 +6,7 @@ export interface Props {
 
 const { title, description } = Astro.props;
 
-import './src/styles/global.css';
+import '@/styles/global.css';
 ---
 
 <!DOCTYPE html>
@@ -27,5 +27,5 @@ import './src/styles/global.css';
 	<body class="bg-sky-100">
 		<slot />
 	</body>
-	<script src="https://required.com/content/plugins/iframe-resizer-for-html-block/assets/dist/iframe-resizer-child.js?ver=0c7b7e5d83be067dc884" async></script>
+	<script src="https://required.com/content/plugins/iframe-resizer-for-html-block/assets/dist/iframe-resizer-child.js?ver=0c7b7e5d83be067dc884" async is:inline></script>
 </html>
