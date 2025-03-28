@@ -10,7 +10,7 @@ import './src/styles/global.css';
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="group/layout">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -18,6 +18,11 @@ import './src/styles/global.css';
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<script>
+			if ( window.location.search.includes( 'embed' ) ) {
+				document.documentElement.classList.add( 'is-embed' );
+			}
+		</script>
 	</head>
 	<body class="bg-sky-100">
 		<slot />
